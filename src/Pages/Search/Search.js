@@ -19,9 +19,7 @@ const Search = () => {
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const [content, setContent] = useState([]);
-  const [numOfPages, setNumOfPages] = useState();
-  const [movieRecommendataion, setMovieRecommendation] = useState([]);
-
+  const [numOfPages, setNumOfPages] = useState(); 
   const darkTheme = createMuiTheme({
     palette: {
       type: "dark",
@@ -66,7 +64,7 @@ const Search = () => {
 // Return: Array<Recipe>`;
 
       const result = await model.generateContent(prompt);
-      console.log(result.response.text());
+      // console.log(result.response.text());
       const movieRecommendationsText = result.response.text(); // Get the response text as a string
 
       const cleanedText = movieRecommendationsText.replace(/```json|```/g, '').trim(); // Remove backticks and JSON markers
@@ -79,10 +77,10 @@ const Search = () => {
       console.error("Error parsing movie recommendations:", error);
       movieRecommendations = [];
     }
-    console.log(movieRecommendations);
+    // console.log(movieRecommendations);
   
       if (movieRecommendations.length === 0) {
-        console.log("No recommendations found.");
+        // console.log("No recommendations found.");
         setContent([]);
         setNumOfPages(0);
         return;
@@ -90,7 +88,8 @@ const Search = () => {
   
       const movieDetailsPromises = movieRecommendations.map((movie) =>
         axios.get(
-          `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${encodeURIComponent(
+          // https://api.themoviedb.org/3/search/multi?query=hera%20pheri&include_adult=false&language=en-US&page=1
+          `https://api.themoviedb.org/3/search/multi?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&query=${encodeURIComponent(
             movie
           )}&page=1&include_adult=false`
         )
@@ -101,7 +100,7 @@ const Search = () => {
         (response) => response.data.results[0] // Take the first result for each movie title
       );
   
-      console.log(detailedMovies); // Contains detailed info for each movie
+      // console.log(detailedMovies); // Contains detailed info for each movie
       setContent(detailedMovies);
       setNumOfPages(1); // Adjust pagination based on your UI/UX needs
     } catch (error) {
@@ -145,9 +144,9 @@ const Search = () => {
           style={{ paddingBottom: 5 }}
           aria-label="disabled tabs example"
         >
-          <Tab style={{ width: "50%" }} label="Search Movies" />
-          <Tab style={{ width: "50%" }} label="Search TV Series" />
-          <Tab style={{ width: "50%" }} label="GPT Recommendation" />
+          <Tab style={{ width: "30%" }} label="Search Movies" />
+          <Tab style={{ width: "33%" }} label="Search TV Series" />
+          <Tab style={{ width: "36%" }} label="CineAI Picks" />
         </Tabs>
       </ThemeProvider>
       <div className="trending">
@@ -159,7 +158,7 @@ const Search = () => {
               poster={c.poster_path}
               title={c.title || c.name}
               date={c.first_air_date || c.release_date}
-              media_type={type ? "tv" : "movie"}
+              media_type={c.media_type}
               vote_average={c.vote_average}
             />
           ))}
